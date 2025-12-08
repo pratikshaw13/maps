@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -214,5 +214,67 @@
 
   .bg-status-info {
     background-color: hsl(var(--status-info));
+  }
+}
+
+/* Leaflet Map Styles */
+.leaflet-container {
+  background: #020617;
+  font-family: 'Inter', sans-serif;
+}
+
+.leaflet-popup-content-wrapper {
+  background: linear-gradient(180deg, #081028, #02101a);
+  color: #fff;
+  border-radius: 8px;
+}
+
+.leaflet-popup-tip {
+  background: #081028;
+}
+
+.custom-house-icon,
+.substation-icon,
+.lt-div-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.warning-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Warning animation styles */
+@keyframes pulse-warning {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.9;
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.6;
+  }
+}
+
+@keyframes pulse-warning-icon {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.8;
   }
 }
