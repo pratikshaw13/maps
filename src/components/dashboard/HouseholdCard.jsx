@@ -75,9 +75,9 @@ export function HouseholdCard({ household, onPhaseChange }) {
             <Zap className={cn('w-3.5 h-3.5', isLowVoltage ? 'text-status-warning' : 'text-muted-foreground')} />
           </div>
           <p className={cn('font-mono text-sm font-bold', isLowVoltage && 'text-status-warning')}>
-            {voltage}V
+            {voltage.toFixed(2)}V
           </p>
-          <p className="text-[10px] text-muted-foreground uppercase">Voltage</p>
+          <p className="text-[10px] text-muted-foreground uppercase">Phase Voltage</p>
         </div>
         
         <div className="text-center p-2 bg-secondary/30 rounded-lg">
@@ -87,7 +87,7 @@ export function HouseholdCard({ household, onPhaseChange }) {
           <p className={cn('font-mono text-sm font-bold', isHighCurrent && 'text-status-critical')}>
             {current.toFixed(1)}A
           </p>
-          <p className="text-[10px] text-muted-foreground uppercase">Current</p>
+          <p className="text-[10px] text-muted-foreground uppercase">Line Current</p>
         </div>
         
         <div className="text-center p-2 bg-secondary/30 rounded-lg">

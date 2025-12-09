@@ -2,106 +2,6 @@ import { Household, PhaseLoad, Transformer, Alert, PowerBalance, Phase } from '@
 
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-// export const generateHouseholds = (): Household[] => [
-//   {
-//     id: 'H001',
-//     name: 'House 001',
-//     address: '12 Main Street',
-//     phase: 'R',
-//     voltage: 228,
-//     current: 15.2,
-//     powerConsumption: 3.46,
-//     trips: [0, 1, 0, 2, 0, 1, 0],
-//     status: 'healthy',
-//     lastUpdated: new Date(),
-//   },
-//   {
-//     id: 'H002',
-//     name: 'House 002',
-//     address: '14 Main Street',
-//     phase: 'R',
-//     voltage: 195,
-//     current: 22.8,
-//     powerConsumption: 4.45,
-//     trips: [1, 2, 1, 3, 2, 1, 0],
-//     status: 'warning',
-//     lastUpdated: new Date(),
-//   },
-//   {
-//     id: 'H003',
-//     name: 'House 003',
-//     address: '16 Main Street',
-//     phase: 'Y',
-//     voltage: 232,
-//     current: 12.5,
-//     powerConsumption: 2.90,
-//     trips: [0, 0, 0, 1, 0, 0, 0],
-//     status: 'healthy',
-//     lastUpdated: new Date(),
-//   },
-//   {
-//     id: 'H004',
-//     name: 'House 004',
-//     address: '18 Main Street',
-//     phase: 'Y',
-//     voltage: 235,
-//     current: 10.8,
-//     powerConsumption: 2.54,
-//     trips: [0, 0, 0, 0, 0, 0, 0],
-//     status: 'healthy',
-//     lastUpdated: new Date(),
-//   },
-//   {
-//     id: 'H005',
-//     name: 'House 005',
-//     address: '20 Main Street',
-//     phase: 'B',
-//     voltage: 180,
-//     current: 28.5,
-//     powerConsumption: 5.13,
-//     trips: [2, 3, 2, 4, 3, 2, 1],
-//     status: 'critical',
-//     lastUpdated: new Date(),
-//   },
-//   {
-//     id: 'H006',
-//     name: 'House 006',
-//     address: '22 Main Street',
-//     phase: 'B',
-//     voltage: 225,
-//     current: 14.2,
-//     powerConsumption: 3.20,
-//     trips: [0, 1, 0, 1, 0, 0, 0],
-//     status: 'healthy',
-//     lastUpdated: new Date(),
-//   },
-//   {
-//     id: 'H007',
-//     name: 'House 007',
-//     address: '24 Main Street',
-//     phase: 'R',
-//     voltage: 188,
-//     current: 25.0,
-//     powerConsumption: 4.70,
-//     trips: [1, 2, 2, 3, 1, 2, 1],
-//     status: 'warning',
-//     lastUpdated: new Date(),
-//   },
-//   {
-//     id: 'H008',
-//     name: 'House 008',
-//     address: '26 Main Street',
-//     phase: 'Y',
-//     voltage: 230,
-//     current: 11.5,
-//     powerConsumption: 2.65,
-//     trips: [0, 0, 1, 0, 0, 0, 0],
-//     status: 'healthy',
-//     lastUpdated: new Date(),
-//   },
-// ];
-
-
 export const generateHouseholds = (): Household[] => [
   {
     id: 'H001',
@@ -109,9 +9,9 @@ export const generateHouseholds = (): Household[] => [
     address: '12 Main Street',
     phase: 'R',
     voltage: 228,
-    current: 12.2,
+    current: 15.2,
     powerConsumption: 3.46,
-    trips: [0, 1, 0, 1, 0, 1, 0],
+    trips: [0, 1, 0, 2, 0, 1, 0],
     status: 'healthy',
     lastUpdated: new Date(),
   },
@@ -120,11 +20,35 @@ export const generateHouseholds = (): Household[] => [
     name: 'House 002',
     address: '14 Main Street',
     phase: 'R',
-    voltage: 215, // changed from 195
-    current: 16.0, // changed from 22.8
-    powerConsumption: 4.00,
-    trips: [1, 1, 1, 1, 1, 1, 0],
-    status: 'healthy', // changed from warning
+    voltage: 195,
+    current: 22.8,
+    powerConsumption: 4.45,
+    trips: [1, 2, 1, 3, 2, 1, 0],
+    status: 'warning',
+    lastUpdated: new Date(),
+  },
+  {
+    id: 'H003',
+    name: 'House 003',
+    address: '16 Main Street',
+    phase: 'Y',
+    voltage: 232,
+    current: 12.5,
+    powerConsumption: 2.90,
+    trips: [0, 0, 0, 1, 0, 0, 0],
+    status: 'healthy',
+    lastUpdated: new Date(),
+  },
+  {
+    id: 'H004',
+    name: 'House 004',
+    address: '18 Main Street',
+    phase: 'Y',
+    voltage: 235,
+    current: 10.8,
+    powerConsumption: 2.54,
+    trips: [0, 0, 0, 0, 0, 0, 0],
+    status: 'healthy',
     lastUpdated: new Date(),
   },
   {
@@ -132,22 +56,50 @@ export const generateHouseholds = (): Household[] => [
     name: 'House 005',
     address: '20 Main Street',
     phase: 'B',
-    voltage: 218, // changed from 180
-    current: 17.5, // changed from 28.5
-    powerConsumption: 3.70,
-    trips: [1, 1, 1, 2, 1, 1, 0],
-    status: 'warning', // reduced from critical
+    voltage: 180,
+    current: 28.5,
+    powerConsumption: 5.13,
+    trips: [2, 3, 2, 4, 3, 2, 1],
+    status: 'critical',
     lastUpdated: new Date(),
   },
-  // rest of houses normal
+  {
+    id: 'H006',
+    name: 'House 006',
+    address: '22 Main Street',
+    phase: 'B',
+    voltage: 225,
+    current: 14.2,
+    powerConsumption: 3.20,
+    trips: [0, 1, 0, 1, 0, 0, 0],
+    status: 'healthy',
+    lastUpdated: new Date(),
+  },
+  {
+    id: 'H007',
+    name: 'House 007',
+    address: '24 Main Street',
+    phase: 'R',
+    voltage: 230,
+    current: 14.5,
+    powerConsumption: 3.34,
+    trips: [0, 0, 0, 1, 0, 0, 0],
+    status: 'healthy',
+    lastUpdated: new Date(),
+  },
+  {
+    id: 'H008',
+    name: 'House 008',
+    address: '26 Main Street',
+    phase: 'Y',
+    voltage: 230,
+    current: 11.5,
+    powerConsumption: 2.65,
+    trips: [0, 0, 1, 0, 0, 0, 0],
+    status: 'healthy',
+    lastUpdated: new Date(),
+  },
 ];
-
-
-
-
-
-
-
 
 export const generatePhaseLoads = (households: Household[]): PhaseLoad[] => {
   const phases: Phase[] = ['R', 'Y', 'B'];
@@ -185,89 +137,28 @@ export const generateTransformer = (households: Household[]): Transformer => {
   };
 };
 
-// export const generateAlerts = (): Alert[] => [
-//   {
-//     id: 'A001',
-//     type: 'phase_change',
-//     severity: 'info',
-//     message: 'House 002 phase changed from R to Y',
-//     action: 'Load balanced successfully. R-phase now at 68% capacity.',
-//     timestamp: new Date(Date.now() - 3600000),
-//     resolved: true,
-//     householdId: 'H002',
-//   },
-//   {
-//     id: 'A002',
-//     type: 'overload',
-//     severity: 'critical',
-//     message: 'House 005 experiencing voltage drop (180V)',
-//     action: 'Recommend phase change to B or transformer upgrade',
-//     timestamp: new Date(Date.now() - 1800000),
-//     resolved: false,
-//     householdId: 'H005',
-//   },
-//   {
-//     id: 'A003',
-//     type: 'voltage_fluctuation',
-//     severity: 'warning',
-//     message: 'Voltage fluctuation detected on R-phase',
-//     action: 'Check for loose connections and neutral integrity',
-//     timestamp: new Date(Date.now() - 900000),
-//     resolved: false,
-//   },
-//   {
-//     id: 'A004',
-//     type: 'unauthorized_tap',
-//     severity: 'critical',
-//     message: 'Possible unauthorized connection detected',
-//     action: 'Power loss of 1.2 kW unaccounted. Inspect line segment 7-B',
-//     timestamp: new Date(Date.now() - 7200000),
-//     resolved: false,
-//   },
-//   {
-//     id: 'A005',
-//     type: 'transformer_added',
-//     severity: 'info',
-//     message: 'Additional transformer TF002 commissioned',
-//     action: 'Capacity increased by 25 kVA. All phases now within limits.',
-//     timestamp: new Date(Date.now() - 86400000),
-//     resolved: true,
-//   },
-//   {
-//     id: 'A006',
-//     type: 'loose_neutral',
-//     severity: 'warning',
-//     message: 'Potential loose neutral detected at junction J-14',
-//     action: 'Dispatch technician for inspection and tightening',
-//     timestamp: new Date(Date.now() - 5400000),
-//     resolved: false,
-//   },
-// ];
-
-
 export const generateAlerts = (): Alert[] => [
   {
     id: 'A001',
     type: 'overload',
-    severity: 'warning',
-    message: 'One household nearing overload threshold',
-    action: 'Monitor load and redistribute if necessary.',
-    timestamp: new Date(Date.now() - 4500000),
+    severity: 'critical',
+    message: 'House 005 experiencing voltage drop (180V)',
+    action: 'Recommend phase change to B or transformer upgrade',
+    timestamp: new Date(Date.now() - 1800000),
     resolved: false,
+    householdId: 'H005',
   },
   {
     id: 'A002',
-    type: 'voltage_fluctuation',
+    type: 'overload',
     severity: 'warning',
-    message: 'Minor voltage variation detected on Y-phase',
-    action: 'Check neutral if fluctuation increases.',
-    timestamp: new Date(Date.now() - 1200000),
+    message: 'House 002 high current draw detected (22.8A)',
+    action: 'Check for excessive load. Consider load distribution.',
+    timestamp: new Date(Date.now() - 3600000),
     resolved: false,
-  }
+    householdId: 'H002',
+  },
 ];
-
-
-
 
 export const generatePowerBalance = (households: Household[]): PowerBalance => {
   const totalConsumption = households.reduce((sum, h) => sum + h.powerConsumption, 0);
