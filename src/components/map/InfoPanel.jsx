@@ -1,7 +1,9 @@
 import { Fragment } from "react";
-import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { X, ExternalLink } from "lucide-react";
 
 export default function InfoPanel({ open, onClose, selectedLT, toggleBreaker }) {
+  const navigate = useNavigate();
   if (!open || !selectedLT) return null;
 
   return (
@@ -98,6 +100,36 @@ export default function InfoPanel({ open, onClose, selectedLT, toggleBreaker }) 
             </button>
           </div>
         ))}
+      </div>
+
+      {/* Navigate to Dashboard Button */}
+      <div style={{ marginTop: 16 }}>
+        <button
+          onClick={() => {
+            navigate(`/lt/${selectedLT.id}`);
+          }}
+          style={{
+            width: "100%",
+            padding: "12px",
+            background: "linear-gradient(135deg, #4db8ff, #0d6efd)",
+            color: "#fff",
+            border: "none",
+            borderRadius: 8,
+            fontWeight: 600,
+            cursor: "pointer",
+            fontSize: 14,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            transition: "opacity 0.2s",
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.opacity = "0.8")}
+          onMouseOut={(e) => (e.currentTarget.style.opacity = "1")}
+        >
+          <ExternalLink size={16} />
+          View Dashboard
+        </button>
       </div>
     </div>
   );

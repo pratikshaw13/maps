@@ -8,8 +8,9 @@ import {
   useMap,
 } from "react-leaflet";
 import L from "leaflet";
+import { useNavigate } from "react-router-dom";
 import InfoPanel from "./InfoPanel";
-import { AlertTriangle, Zap, Activity } from "lucide-react";
+import { AlertTriangle, Zap, Activity, ExternalLink } from "lucide-react";
 
 // Fix for default marker icons
 import "leaflet/dist/leaflet.css";
@@ -24,6 +25,7 @@ function MapContent() {
 
 /* ---------------------- Enhanced House Info Panel ---------------------- */
 function HouseInfoPanel({ house, onClose, onToggle, onPhaseChange }) {
+  const navigate = useNavigate();
   if (!house) return null;
 
   const phaseColors = {
@@ -249,6 +251,39 @@ function HouseInfoPanel({ house, onClose, onToggle, onPhaseChange }) {
               </button>
             ))}
         </div>
+      </div>
+
+      {/* Navigate to Dashboard Button */}
+      <div style={{ marginTop: 16 }}>
+        <button
+          onClick={() => {
+            // Use house number to create ID (H001, H002, etc.)
+            // Map houses use sequential numbers, so we can map them to dashboard IDs
+            const houseId = `H${String(house.number).padStart(3, '0')}`;
+            navigate(`/household/${houseId}`);
+          }}
+          style={{
+            width: "100%",
+            padding: "12px",
+            background: "linear-gradient(135deg, #4db8ff, #0d6efd)",
+            color: "#fff",
+            border: "none",
+            borderRadius: 8,
+            fontWeight: 600,
+            cursor: "pointer",
+            fontSize: 14,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            transition: "opacity 0.2s",
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.opacity = "0.8")}
+          onMouseOut={(e) => (e.currentTarget.style.opacity = "1")}
+        >
+          <ExternalLink size={16} />
+          View Dashboard
+        </button>
       </div>
     </div>
   );
@@ -555,9 +590,30 @@ export default function MapComponent({ showWarningsOnly = false }) {
     });
 
     setHousesMap(result);
+    
+    // Store housesMap and ltNodes in localStorage for LTDashboard access
+    try {
+      localStorage.setItem('housesMap', JSON.stringify(result));
+      localStorage.setItem('ltNodes', JSON.stringify(ltNodes));
+    } catch (e) {
+      // Silently handle localStorage errors
+    }
+    
     // Only initialize once when ltBranchLines is ready
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient, ltBranchLines]);
+
+  // Sync housesMap and ltNodes to localStorage whenever they change
+  useEffect(() => {
+    if (Object.keys(housesMap).length > 0) {
+      try {
+        localStorage.setItem('housesMap', JSON.stringify(housesMap));
+        localStorage.setItem('ltNodes', JSON.stringify(ltNodes));
+      } catch (e) {
+        // Silently handle localStorage errors
+      }
+    }
+  }, [housesMap, ltNodes]);
 
   // Toggle house status
   const toggleHouse = (segKey, dotIdx, houseIdx) => {
@@ -768,7 +824,37 @@ export default function MapComponent({ showWarningsOnly = false }) {
     if (!isClient || Object.keys(housesMap).length === 0) return;
 
     ltNodes.forEach((lt) => {
-      // Special case for LT-4: Check if blue phase has 60% faults
+      // Check if 60% or more houses from this LT have load limit exceeded (current > 20)
+      let totalHouses = 0;
+      let loadLimitExceededHouses = 0;
+      
+      for (let breakerIndex = 0; breakerIndex < 3; breakerIndex++) {
+        const segKey = `${lt.id}-${breakerIndex}`;
+        const houses = housesMap[segKey];
+        
+        if (houses) {
+          houses.forEach((arr) => {
+            arr.forEach((house) => {
+              totalHouses++;
+              const currentNum = parseFloat(house.current.replace(" A", ""));
+              // Check for load limit exceeded (current > 20) OR warnings
+              if ((currentNum > 20 || house.warnings.length > 0) && house.status === "ON") {
+                loadLimitExceededHouses++;
+              }
+            });
+          });
+        }
+      }
+      
+      // If 60% or more houses have load limit exceeded, show popup
+      if (totalHouses > 0 && (loadLimitExceededHouses / totalHouses) >= 0.6) {
+        if (transformerPopup.ltId !== lt.id) {
+          setTransformerPopup({ show: true, ltId: lt.id });
+          return; // Don't check other conditions
+        }
+      }
+      
+      // Special case for LT-4: Check if blue phase has 60% faults (legacy check)
       if (lt.id === "LT-4") {
         const bluePhaseSegKey = "LT-4-2"; // Blue phase is breakerIndex 2
         const bluePhaseHouses = housesMap[bluePhaseSegKey];
@@ -908,8 +994,66 @@ export default function MapComponent({ showWarningsOnly = false }) {
                     icon={ltIcon}
                     eventHandlers={{
                       click: () => {
-                        setSelectedLT(node);
-                        setPanelOpen(true);
+                        // Check if this LT has 60% or more houses with load limit exceeded
+                        let shouldShowTransformerPopup = false;
+                        
+                        let totalHouses = 0;
+                        let loadLimitExceededHouses = 0;
+                        
+                        for (let breakerIndex = 0; breakerIndex < 3; breakerIndex++) {
+                          const segKey = `${node.id}-${breakerIndex}`;
+                          const houses = housesMap[segKey];
+                          if (houses) {
+                            houses.forEach((arr) => {
+                              arr.forEach((house) => {
+                                totalHouses++;
+                                const currentNum = parseFloat(house.current.replace(" A", ""));
+                                // Check for load limit exceeded (current > 20) OR warnings
+                                if ((currentNum > 20 || house.warnings.length > 0) && house.status === "ON") {
+                                  loadLimitExceededHouses++;
+                                }
+                              });
+                            });
+                          }
+                        }
+                        
+                        // If 60% or more houses have load limit exceeded, show popup
+                        if (totalHouses > 0 && (loadLimitExceededHouses / totalHouses) >= 0.6) {
+                          shouldShowTransformerPopup = true;
+                        }
+                        
+                        // Also check if all three phases have faults
+                        if (!shouldShowTransformerPopup) {
+                          let allPhasesHaveFaults = true;
+                          for (let breakerIndex = 0; breakerIndex < 3; breakerIndex++) {
+                            const segKey = `${node.id}-${breakerIndex}`;
+                            const houses = housesMap[segKey];
+                            if (!houses) {
+                              allPhasesHaveFaults = false;
+                              break;
+                            }
+                            let phaseHasFault = false;
+                            houses.forEach((arr) => {
+                              arr.forEach((house) => {
+                                if (house.warnings.length > 0 && house.status === "ON") {
+                                  phaseHasFault = true;
+                                }
+                              });
+                            });
+                            if (!phaseHasFault) {
+                              allPhasesHaveFaults = false;
+                              break;
+                            }
+                          }
+                          shouldShowTransformerPopup = allPhasesHaveFaults;
+                        }
+                        
+                        if (shouldShowTransformerPopup) {
+                          setTransformerPopup({ show: true, ltId: node.id });
+                        } else {
+                          setSelectedLT(node);
+                          setPanelOpen(true);
+                        }
                       },
                     }}
                   />
@@ -1164,30 +1308,42 @@ export default function MapComponent({ showWarningsOnly = false }) {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            backgroundColor: "rgba(0, 0, 0, 0.2)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             zIndex: 10000,
+            pointerEvents: "none", // Allow clicks to pass through background
           }}
         >
           <div
             style={{
-              background: "linear-gradient(180deg, #081028, #02101a)",
+              background: "linear-gradient(180deg, rgba(8, 16, 40, 0.95), rgba(2, 16, 26, 0.95))",
+              backdropFilter: "blur(10px)",
               padding: 30,
               borderRadius: 16,
               maxWidth: 500,
               width: "90%",
               boxShadow: "0 8px 30px rgba(0,0,0,0.6), 0 0 30px rgba(0,150,255,0.1)",
               border: "2px solid #4db8ff",
+              pointerEvents: "auto", // Enable clicks on the popup itself
             }}
           >
             <h2 style={{ margin: "0 0 16px 0", fontSize: 24, fontWeight: 700, color: "#fff" }}>
               ⚠️ Critical Alert
             </h2>
             <p style={{ margin: "0 0 20px 0", fontSize: 16, color: "#bcd1ee", lineHeight: 1.6 }}>
-              All three phases (R, Y, B) from <strong style={{ color: "#4db8ff" }}>{transformerPopup.ltId}</strong> are experiencing faults.
-              This indicates overload conditions across all phases.
+              {transformerPopup.ltId === "LT-4" ? (
+                <>
+                  Blue phase from <strong style={{ color: "#4db8ff" }}>{transformerPopup.ltId}</strong> has 60% or more nodes experiencing faults.
+                </>
+              ) : (
+                <>
+                  All three phases (R, Y, B) from <strong style={{ color: "#4db8ff" }}>{transformerPopup.ltId}</strong> are experiencing faults.
+                </>
+              )}
+              <br />
+              This indicates overload conditions requiring additional transformer capacity.
             </p>
             <p style={{ margin: "0 0 24px 0", fontSize: 14, color: "#9fb4d8", lineHeight: 1.6 }}>
               <strong>Recommendation:</strong> Add an extra transformer in parallel to meet the increased demand and balance the load.
