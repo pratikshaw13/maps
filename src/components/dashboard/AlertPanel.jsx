@@ -62,7 +62,7 @@ export function AlertPanel({ alerts, onResolve }) {
       </div>
 
       <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-        {unresolvedAlerts.map(alert => {
+        {unresolvedAlerts.slice(0, 3).map(alert => {
           const Icon = alertIcons[alert.type];
           const config = severityConfig[alert.severity];
           

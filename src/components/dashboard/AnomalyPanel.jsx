@@ -88,7 +88,7 @@ export function AnomalyPanel({ households }) {
       </div>
 
       <div className="space-y-3">
-        {anomalies.map((anomaly, index) => {
+        {anomalies.slice(0, 3).map((anomaly, index) => {
           const Icon = anomaly.icon;
           const isCritical = anomaly.severity === 'critical';
           
